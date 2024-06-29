@@ -1,45 +1,103 @@
-import { View, Text, Pressable } from 'react-native'
-import React from 'react'
-import StyleSheets from './BookEntry.style'
-import useResponsive from '../../packages/hooks/useResponsive'
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import React from 'react';
+import useResponsive from '../../packages/hooks/useResponsive';
+import { useNavigation } from '@react-navigation/native';
+import { CASH_MANAGER } from '../../constants/Navigation';
 
-const BookEntry = ({ data }) => {
+const BookEntry = ({ data, isOnHoldDataSelected, storeHoldDatas, onHoldDatas }) => {
+  const { wp, hp } = useResponsive();
+  const navigation = useNavigation();
 
- const {wp,hp} = useResponsive();
- const styles = StyleSheets();
+  const seeCashBooks = (cashID, cashName) => {
+    navigation.navigate(CASH_MANAGER, { cashbookId: cashID, cashName: cashName });
+  };
+
+  const isSelected = onHoldDatas.includes(data._id);
 
   return (
-    <Pressable style={{
-        width : "100%",
-        borderRadius : 10,
-        paddingHorizontal : 10,
-        paddingVertical : 10,
-        gap : 5,
-        backgroundColor : "#f8f8f8"
+    <Pressable
+      style={[
+        styles.container,
+        { backgroundColor: isSelected ? '#e8f0fd' : '#f8f8f8' }
+      ]}
+      onPress={() => {
+        if (isOnHoldDataSelected) {
+          storeHoldDatas(data._id);
+        } else {
+          seeCashBooks(data._id, data.name);
+        }
       }}
-      onPress={()=>{}}
-      >
-        <View><Text style={{ color : "#000" , fontSize : 18 , fontWeight : "700" , borderBottomWidth : 0.5 , borderColor:"#787878" ,paddingVertical : 5, }}>{data?.name}</Text></View>
-        {/* <View style={{ flexDirection : "row" , alignItems : "center" , gap : 10 ,paddingVertical : 5, borderBottomWidth : 0.5 , borderColor:"#787878" }}>
-         <Text style={{ color : "#787878" , fontSize : 16 }}>Net Balance</Text>
-          <Text style={{ color : "green" , fontSize : 16 }}>₹30</Text>
-        </View> */}
-        <View style={{ flexDirection : "row" , alignItems : "center" , gap : 10 }}>
-          <View style={{ flexDirection : "row" , alignItems : "center" , gap : 10 ,paddingVertical : 5}}>
-         <Text style={{ color : "#787878" , fontSize : 16 }}>Net Balance</Text>
-          <Text style={{ color : "green" , fontSize : 16 }}>₹{Number(data?.income) - Number(data?.expense)}</Text>
+      onLongPress={() => {
+        storeHoldDatas(data._id);
+      }}
+    >
+      <View>
+        <Text style={styles.bookName}>{data?.name}</Text>
+      </View>
+      <View style={styles.infoContainer}>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Net Balance</Text>
+          <Text style={styles.netBalance}>₹{data.netBalance}</Text>
         </View>
-         <View style={{ flexDirection : "row" , alignItems : "center" , gap : 10 }}>
-         <Text style={{ color : "#787878" , fontSize : 16 }}>Income</Text>
-          <Text style={{ color : "green" , fontSize : 16 }}>₹{data?.income}</Text>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Income</Text>
+          <Text style={styles.income}>₹{data?.totalIncome}</Text>
         </View>
-        <View style={{ flexDirection : "row" , alignItems : "center" , gap : 10  }}>
-          <Text style={{ color : "#787878" , fontSize : 16 }}>Expense</Text>
-          <Text style={{ color : "red" , fontSize : 16 }}>₹{data?.expense}</Text>
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Expense</Text>
+          <Text style={styles.expense}>₹{data.totalExpense}</Text>
         </View>
-        </View>
-      </Pressable>
-  )
-}
+      </View>
+    </Pressable>
+  );
+};
 
-export default BookEntry
+const styles = StyleSheet.create({
+  container: {
+    width: '94%',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    margin: 10,
+    borderWidth: 1,
+    borderColor: 'grey',
+  },
+  bookName: {
+    color: '#000',
+    fontSize: 18,
+    fontWeight: '700',
+    borderBottomWidth: 0.5,
+    borderColor: '#787878',
+    paddingVertical: 5,
+  },
+  infoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 10,
+    paddingVertical: 5,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  infoLabel: {
+    color: '#787878',
+    fontSize: 16,
+  },
+  netBalance: {
+    color: 'green',
+    fontSize: 16,
+  },
+  income: {
+    color: 'green',
+    fontSize: 16,
+  },
+  expense: {
+    color: 'red',
+    fontSize: 16,
+  },
+});
+
+export default BookEntry;

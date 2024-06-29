@@ -1,3 +1,7 @@
 export const LOGIN_AUTH = "LOGIN_AUTH"
 export const REGISTER_AUTH = "REGISTER_AUTH"
 export const DASHOARD = "DASHOARD"
+export const ENTRY_MANAGER = "ENTRY_MANAGER"
+export const CASH_MANAGER = "CASH_MANAGER"
+export const CASH_ENTRY_MANAGER = "CASH_ENTRY_MANAGER"
+
